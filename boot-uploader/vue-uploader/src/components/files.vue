@@ -17,9 +17,10 @@
 
   export default {
     name: COMPONENT_NAME,
+    props: ['selectorType'],
     computed: {
       files () {
-        return this.$parent.files
+        return this.$parent.files.filter(f => f.selectorType === this.selectorType)
       }
     },
     components: {

@@ -1,0 +1,32 @@
+diff --git a/node_modules/simple-uploader.js/dist/uploader.js b/node_modules/simple-uploader.js/dist/uploader.js
+index 05d7c3c..e1615aa 100644
+--- a/node_modules/simple-uploader.js/dist/uploader.js
++++ b/node_modules/simple-uploader.js/dist/uploader.js
+@@ -708,6 +708,7 @@ utils.extend(Uploader.prototype, {
+       // When new files are added, simply append them to the overall list
+       var that = this
+       input.addEventListener('change', function (e) {
++        console.log("e.target.value", e.target.value)
+         if (e.target.value) {
+           that.addFiles(e.target.files, e)
+           e.target.value = ''
+diff --git a/node_modules/simple-uploader.js/src/uploader.js b/node_modules/simple-uploader.js/src/uploader.js
+index bc73de0..2421481 100644
+--- a/node_modules/simple-uploader.js/src/uploader.js
++++ b/node_modules/simple-uploader.js/src/uploader.js
+@@ -131,6 +131,7 @@ utils.extend(Uploader.prototype, {
+         var uniqueIdentifier = this.generateUniqueIdentifier(file)
+         if (this.opts.allowDuplicateUploads || !this.getFromUniqueIdentifier(uniqueIdentifier)) {
+           var _file = new File(this, file, this)
++          _file.selectorType = evt.target.id
+           _file.uniqueIdentifier = uniqueIdentifier
+           if (this._trigger('fileAdded', _file, evt)) {
+             _files.push(_file)
+@@ -360,6 +361,7 @@ utils.extend(Uploader.prototype, {
+       // When new files are added, simply append them to the overall list
+       var that = this
+       input.addEventListener('change', function (e) {
++        console.log(e.target.value)
+         if (e.target.value) {
+           that.addFiles(e.target.files, e)
+           e.target.value = ''

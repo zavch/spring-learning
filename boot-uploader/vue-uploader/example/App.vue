@@ -1,6 +1,14 @@
 <template>
-  <uploader :options="options" :file-status-text="statusText" class="uploader-example" ref="uploader"
-            @file-complete="fileComplete" @complete="complete"></uploader>
+  <uploader :options="options" :file-status-text="statusText" :autoStart="true" class="uploader-example" ref="uploader"
+            @file-added="fileAdded" @files-added="filesAdded" @file-complete="fileComplete" @complete="complete">
+    <uploader-btn :attrs="imgAttrs">选择图片</uploader-btn>
+    <p>图片列表</p>
+    <uploader-files selector-type="img-selector"></uploader-files>
+    <br>
+    <uploader-btn :attrs="fileAttrs">选择文件</uploader-btn>
+    <p>文件列表</p>
+    <uploader-files selector-type="file-selector"></uploader-files>
+  </uploader>
 </template>
 
 <script>
@@ -14,7 +22,7 @@
           target: '/boot/uploader/chunk',
           testChunks: true,
           simultaneousUploads: 1,
-          chunkSize: 10 * 1024 * 1024,
+          chunkSize: 1 * 1024 * 1024,
           // checkChunkUploadedByResponse: function (chunk, message) {
           //   let objMessage = {}
           //   try {
@@ -25,10 +33,15 @@
           //   // objMessage.uploaded_chunks = [2, 3, 4, 5, 6, 8, 10, 11, 12, 13, 17, 20, 21]
           //   // check the chunk is uploaded
           //   return (objMessage.uploaded_chunks || []).indexOf(chunk.offset + 1) >= 0
-          // }
+          // },
+          allowDuplicateUploads: true
         },
-        attrs: {
-          accept: 'image/*'
+        imgAttrs: {
+          accept: 'image/*',
+          id: 'img-selector'
+        },
+        fileAttrs: {
+          id: 'file-selector'
         },
         statusText: {
           success: '成功了',
@@ -58,6 +71,39 @@
         }).catch(function (error) {
           console.log(error);
         });
+      },
+      fileAdded(file) {
+        console.log("fileAdded")
+      },
+      filesAdded(files, fileList) {
+        console.log("filesAdded")
+        let imgCounts = uploader.files.filter(f => f.selectorType === "img-selector").length;
+        let fileCounts = uploader.files.filter(f => f.selectorType === "file-selector").length;
+        let size = uploader.getSize();
+        console.log("imgCounts:",imgCounts,",fileCounts", fileCounts, ",size:", size);
+        for(let file of files) {
+          size += file.size;
+          if (size > 10 * 1024 * 1024) {
+              files.ignored = true
+              alert("总大小限制为10M");
+              break;
+          }
+          if (file.selectorType === "img-selector") {
+              imgCounts++;
+          } else {
+              fileCounts++;
+          }
+          if (imgCounts > 3) {
+            files.ignored = true
+            alert("图片最多3张");
+            break;
+          }
+          if (fileCounts > 3) {
+            files.ignored = true
+            alert("文件最多3个");
+            break;
+          }
+        }
       }
     },
     mounted() {
